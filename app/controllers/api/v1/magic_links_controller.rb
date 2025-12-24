@@ -3,6 +3,7 @@
 module Api
   module V1
     class MagicLinksController < ApplicationController
+      skip_before_action :authenticate_request, only: [:request_magic_link, :verify]
       before_action :check_email, only: [:request]
 
       def request_magic_link
