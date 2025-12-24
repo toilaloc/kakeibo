@@ -1,0 +1,14 @@
+<p>Hello <%= @user.display_name %>,</p>
+
+<p>
+  Click the link below to sign in.
+  This link will expire in <strong>60 minutes</strong>.
+</p>
+
+<p>
+  <a href="<%= @magic_link_url %>">
+    Sign in to Kakeibo
+  </a>
+</p>
+
+<p>If you did not request this, you can safely ignore this email.</p>
