@@ -1,5 +1,5 @@
 class Api::V1::TransactionsController < ApplicationController
-  before_action :owned_by_current_user?, only: %i[show update destroy]
+  before_action :check_owned_by_current_user!, only: %i[show update destroy]
 
   def create
     transaction = Transaction.create!(transaction_params)
@@ -49,8 +49,10 @@ class Api::V1::TransactionsController < ApplicationController
     @transaction ||= Transaction.find(params[:id])
   end
 
-  def owned_by_current_user?
-    transaction.owned_by?(current_user.id)
+  def check_owned_by_current_user!
+    return if transaction.owned_by?(current_user.id)
+
+    render json: { error: 'You are not authorized to access this transaction' }, status: :forbidden
   end
 
   def transaction_params
