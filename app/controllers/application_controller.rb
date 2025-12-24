@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
-  before_action :authenticate_request
-  
+  before_action :authenticate_request, except: %i(request_magic_link verify)
+
   attr_reader :current_user
   
   private
