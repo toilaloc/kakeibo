@@ -8,8 +8,8 @@ on:
 
 env:
   RAILS_ENV: test
-  DATABASE_URL: mysql2://root:password@mysql:3306/kakeibo_test
-  REDIS_URL: redis://localhost:6379/1
+  DATABASE_URL: mysql2://root:password@127.0.0.1:3306/kakeibo_test
+  REDIS_URL: redis://127.0.0.1:6379/1
 
 jobs:
   test:
@@ -50,7 +50,9 @@ jobs:
 
       - name: Wait for MySQL
         run: |
-          until mysqladmin ping -h mysql -ppassword --silent; do
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 -P 3306 -ppassword --silent && break
+            echo "Waiting for MySQL..."
             sleep 2
           done
 
