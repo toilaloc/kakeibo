@@ -13,6 +13,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - kakeibo_network
     healthcheck:
@@ -46,6 +47,7 @@ services:
     environment:
       RAILS_ENV: development
       DATABASE_URL: mysql2://kakeibo_user:kakeibo_password@mysql:3306/kakeibo_development
+      DATABASE_TEST_URL: mysql2://kakeibo_user:kakeibo_password@mysql:3306/kakeibo_test
       REDIS_URL: redis://:redis_password@redis:6379/0
     depends_on:
       mysql:
