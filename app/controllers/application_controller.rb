@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::API
-  before_action :authenticate_request, except: %i[request_magic_link verify]
+  before_action :authenticate_request
 
   attr_reader :current_user
 
