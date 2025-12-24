@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: kakeibo_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: kakeibo_development
+      MYSQL_USER: kakeibo_user
+      MYSQL_PASSWORD: kakeibo_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - kakeibo_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: kakeibo_redis
+    command: redis-server --appendonly yes --requirepass redis_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - kakeibo_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rails:
+    build: .
+    container_name: kakeibo_rails
+    command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails db:create db:migrate && bundle exec rails server -b 0.0.0.0"
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: mysql2://kakeibo_user:kakeibo_password@mysql:3306/kakeibo_development
+      REDIS_URL: redis://:redis_password@redis:6379/0
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - bundle_cache:/usr/local/bundle
+    networks:
+      - kakeibo_network
+    stdin_open: true
+    tty: true
+
+  mailcatcher:
+    image: schickling/mailcatcher
+    container_name: kakeibo_mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - kakeibo_network
+
+volumes:
+  mysql_data:
+  redis_data:
+  bundle_cache:
+
+networks:
+  kakeibo_network:
+    driver: bridge
