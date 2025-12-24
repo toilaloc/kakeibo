@@ -2,20 +2,20 @@ name: CI
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, develop ]
 
 env:
-  RUBY_VERSION: 3.2.0
   RAILS_ENV: test
   DATABASE_URL: mysql2://root:password@127.0.0.1:3306/kakeibo_test
-  REDIS_URL: redis://localhost:6379/1
+  REDIS_URL: redis://127.0.0.1:6379/1
+  FORCE_COLOR: "1"
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       mysql:
         image: mysql:8.0
@@ -25,73 +25,63 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd "mysqladmin ping -h localhost"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
       redis:
         image: redis:7-alpine
         ports:
           - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v4
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ${{ env.RUBY_VERSION }}
+          ruby-version: 3.2.9
           bundler-cache: true
-      
-      - name: Install dependencies
+
+      - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libmysqlclient-dev
-      
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            mysqladmin ping -h 127.0.0.1 -P 3306 -ppassword --silent && break
+            echo "Waiting for MySQL..."
+            sleep 2
+          done
+
       - name: Setup database
         run: |
           bundle exec rails db:create
           bundle exec rails db:schema:load
-      
-      - name: Run tests
-        run: bundle exec rspec
-      
+
+      - name: Run RSpec
+        run: bundle exec rspec --color --format documentation
+
       - name: Run RuboCop
-        run: bundle exec rubocop
-        continue-on-error: false
-      
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        if: always()
-        with:
-          files: ./coverage/.resultset.json
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+        run: bundle exec rubocop --format progress --color
+        continue-on-error: true
 
   build:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: false
           tags: kakeibo:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max

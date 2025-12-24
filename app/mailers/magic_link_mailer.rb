@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MagicLinkMailer < ApplicationMailer
   default from: 'no-reply@kakeibo.com'
 
