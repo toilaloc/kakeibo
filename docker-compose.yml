@@ -40,6 +40,7 @@ services:
 
   rails:
     build: .
+    user: "${UID}:${GID}"
     container_name: kakeibo_rails
     command: sh -c "rm -f tmp/pids/server.pid && bundle exec rails db:create db:migrate && bundle exec rails server -b 0.0.0.0"
     ports:

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MagicLinkService
+class MagicLinkService < BaseService
   include Rails.application.routes.url_helpers
 
   REDIS_KEY_PREFIX = 'magic_links:'
