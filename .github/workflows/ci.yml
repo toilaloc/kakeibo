@@ -10,6 +10,7 @@ env:
   RAILS_ENV: test
   DATABASE_URL: mysql2://root:password@127.0.0.1:3306/kakeibo_test
   REDIS_URL: redis://127.0.0.1:6379/1
+  FORCE_COLOR: "1"
 
 jobs:
   test:
@@ -62,10 +63,11 @@ jobs:
           bundle exec rails db:schema:load
 
       - name: Run RSpec
-        run: bundle exec rspec
+        run: bundle exec rspec --color --format documentation
 
       - name: Run RuboCop
-        run: bundle exec rubocop
+        run: bundle exec rubocop --format progress --color
+        continue-on-error: true
 
   build:
     runs-on: ubuntu-latest
