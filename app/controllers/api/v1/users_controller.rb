@@ -1,40 +1,46 @@
-class Api::V1::UsersController < ApplicationController
-  before_action :user, only: [:show, :destroy]
+# frozen_string_literal: true
 
-  def create
-    created_user = User.create!(user_params)
+module Api
+  module V1
+    class UsersController < ApplicationController
+      before_action :user, only: %i[show destroy]
 
-    render json: {
-      id: created_user.id,
-      message: 'User has been created successfully'
-    }, status: :created
-  end
+      def create
+        created_user = User.create!(user_params)
 
-  def show
-    render json: {
-      id: user.id,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      display_name: user.display_name,
-      email: user.email
-    }
-  end
+        render json: {
+          id: created_user.id,
+          message: 'User has been created successfully'
+        }, status: :created
+      end
 
-  def destroy
-    user.destroy!
+      def show
+        render json: {
+          id: user.id,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          display_name: user.display_name,
+          email: user.email
+        }
+      end
 
-    render json: {
-      message: 'User has been deleted successfully'
-    }
-  end
+      def destroy
+        user.destroy!
 
-  private
+        render json: {
+          message: 'User has been deleted successfully'
+        }
+      end
 
-  def user_params
-    params.require(:user).permit(:first_name, :last_name, :display_name, :email, :password, :password_confirmation)
-  end
+      private
 
-  def user
-    @user ||= User.find(params[:id])
+      def user_params
+        params.require(:user).permit(:first_name, :last_name, :display_name, :email, :password, :password_confirmation)
+      end
+
+      def user
+        @user ||= User.find(params[:id])
+      end
+    end
   end
 end
