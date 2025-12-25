@@ -1,6 +1,31 @@
 class Api::V1::TransactionsController < ApplicationController
   before_action :check_owned_by_current_user!, only: %i[show update destroy]
 
+  def index
+    transactions = current_user.transactions.order(transaction_date: :desc).page(params[:page]).per(params[:per_page] || 10)
+
+    render json: {
+      transactions: transactions.map { |transaction|
+        {
+          id: transaction.id,
+          user_id: transaction.user.display_name,
+          category_id: transaction.category_id,
+          category_name: transaction.category.name,
+          category_type: transaction.category.category_type,
+          amount: transaction.amount,
+          transaction_date: transaction.transaction_date.strftime('%F'),
+          note: transaction.note
+        }
+      },
+      pagination: {
+        current_page: transactions.current_page,
+        total_pages: transactions.total_pages,
+        total_count: transactions.total_count,
+        per_page: transactions.limit_value
+      }
+    }
+  end
+
   def create
     transaction = Transaction.create!(transaction_params)
 

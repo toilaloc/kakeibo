@@ -1,4 +1,26 @@
 class Api::V1::CategoriesController < ApplicationController
+  def index
+    categories = Category.page(params[:page]).per(params[:per_page] || 6)
+
+    render json: {
+      categories: categories.map { |category|
+        {
+          id: category.id,
+          name: category.name,
+          type: category.category_type,
+          icon: category.icon
+        }
+      },
+      pagination: {
+        total_count: categories.total_count,
+        current_page: categories.current_page,
+        total_pages: categories.total_pages,
+        total_count: categories.total_count,
+        per_page: categories.limit_value
+      }
+    }
+  end
+
   def create
     category = Category.create!(category_params)
 

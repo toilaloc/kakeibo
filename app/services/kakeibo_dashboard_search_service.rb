@@ -19,6 +19,7 @@ class KakeiboDashboardSearchService < BaseService
          .joins(:user, :category)
          .where(search_query, start_date: @start_date, end_date: @end_date, category_type: @category_type)
          .select(selected_fields)
+         .distinct
   end
 
   def search_query

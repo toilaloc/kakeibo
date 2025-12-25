@@ -9,7 +9,7 @@ class KakeiboDashboardParamService < BaseService
   end
 
   def call
-    raise ArgumentError, 'Invalid parameters' if permitted_params.blank?
+    raise ActionFailed, :invalid_params if permitted_params.blank?
 
     validate_params
     set_params
@@ -20,7 +20,7 @@ class KakeiboDashboardParamService < BaseService
   def validate_params
     return if DASHBOARD_TYPE.include?(permitted_params[:dashboard_type]) && ANALYSIS_TYPE.include?(permitted_params[:analysis_type])
 
-    raise ArgumentError, 'Invalid dashboard_type or analysis_type'
+    raise ActionFailed, :invalid_params
   end
 
   def set_params

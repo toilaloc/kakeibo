@@ -14,8 +14,8 @@ Rails.application.routes.draw do
       delete '/magic_links/logout', to: 'magic_links#logout'
 
       resources :users, only: %i[create show destroy]
-      resources :categories, only: %i[create show update destroy]
-      resources :transactions, only: %i[create show update destroy]
+      resources :categories, only: %i[index create show update destroy]
+      resources :transactions, only: %i[index create show update destroy]
       resources :kakeibo_dashboard, only: %i[index]
     end
   end
