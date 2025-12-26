@@ -26,7 +26,7 @@ class KakeiboDashboardParamService < BaseService
   def set_params
     permitted_params.tap do |params|
       params[:dashboard_type] = if permitted_params[:dashboard_type] == 'all'
-                                  %w[income expense]
+                                  %w[0 1]
                                 else
                                   permitted_params[:dashboard_type]
                                 end

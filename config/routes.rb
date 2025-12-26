@@ -8,6 +8,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      namespace :dropdowns do
+        resources :categories, only: %i[index]
+      end
+
       post '/signup', to: 'users#create'
       post '/magic_links/request_magic_link', to: 'magic_links#request_magic_link'
       get '/magic_links/verify', to: 'magic_links#verify', as: :magic_link

@@ -16,7 +16,7 @@ class KakeiboDashboardSearchService < BaseService
 
   def search_results
     @user.transactions
-         .joins(:user, :category)
+         .joins(:category)
          .where(search_query, start_date: @start_date, end_date: @end_date, category_type: @category_type)
          .select(selected_fields)
          .distinct
@@ -24,7 +24,7 @@ class KakeiboDashboardSearchService < BaseService
 
   def search_query
     <<-SQL
-      transaction_date BETWEEN :start_date AND :end_date
+      transactions.transaction_date BETWEEN :start_date AND :end_date
                        AND categories.category_type IN (:category_type)
     SQL
   end
@@ -35,7 +35,6 @@ class KakeiboDashboardSearchService < BaseService
       transactions.amount,
       transactions.transaction_date,
       transactions.note,
-      users.display_name AS user_display_name,
       categories.name AS category_name,
       categories.category_type AS category_type
     SQL

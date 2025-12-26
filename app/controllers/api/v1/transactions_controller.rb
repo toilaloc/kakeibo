@@ -2,7 +2,10 @@ class Api::V1::TransactionsController < ApplicationController
   before_action :check_owned_by_current_user!, only: %i[show update destroy]
 
   def index
-    transactions = current_user.transactions.order(transaction_date: :desc).page(params[:page]).per(params[:per_page] || 10)
+    user_transactions = current_user.transactions
+    transactions = user_transactions.order(transaction_date: :desc).page(params[:page]).per(params[:per_page] || 10)
+    total_income = user_transactions.joins(:category).where(categories: { category_type: :income }).sum(:amount)
+    total_expense = user_transactions.joins(:category).where(categories: { category_type: :expense }).sum(:amount)
 
     render json: {
       transactions: transactions.map { |transaction|
@@ -20,6 +23,8 @@ class Api::V1::TransactionsController < ApplicationController
       pagination: {
         current_page: transactions.current_page,
         total_pages: transactions.total_pages,
+        total_income: total_income,
+        total_expense: total_expense,
         total_count: transactions.total_count,
         per_page: transactions.limit_value
       }
