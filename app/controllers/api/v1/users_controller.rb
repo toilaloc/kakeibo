@@ -3,11 +3,13 @@
 module Api
   module V1
     class UsersController < ApplicationController
-      skip_before_action :authenticate_request, only: [:create]
+      skip_before_action :authenticate_request, :authenticate_user!, only: [:create]
       before_action :user, only: %i[show destroy]
 
       def create
         created_user = User.create!(user_params)
+
+        UserMailer.welcome_email(created_user).deliver_later
 
         render json: {
           id: created_user.id,
