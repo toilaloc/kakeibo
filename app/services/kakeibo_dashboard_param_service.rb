@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class KakeiboDashboardParamService < BaseService
   DASHBOARD_TYPE = %w[income expense all].freeze
   ANALYSIS_TYPE  = %w[1_month 6_month 12_month custom].freeze
@@ -18,7 +20,9 @@ class KakeiboDashboardParamService < BaseService
   private
 
   def validate_params
-    return if DASHBOARD_TYPE.include?(permitted_params[:dashboard_type]) && ANALYSIS_TYPE.include?(permitted_params[:analysis_type])
+    if DASHBOARD_TYPE.include?(permitted_params[:dashboard_type]) && ANALYSIS_TYPE.include?(permitted_params[:analysis_type])
+      return
+    end
 
     raise ActionFailed, :invalid_params
   end

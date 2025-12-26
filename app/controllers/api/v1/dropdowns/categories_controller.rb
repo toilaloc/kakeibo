@@ -1,7 +1,15 @@
-class Api::V1::Dropdowns::CategoriesController < ApplicationController
-  def index
-    categories = Category.select(:id, :name, :category_type)
+# frozen_string_literal: true
 
-    render json: { categories: }
+module Api
+  module V1
+    module Dropdowns
+      class CategoriesController < ApplicationController
+        def index
+          categories = Category.select(:id, :name, :category_type)
+
+          render json: { categories: }
+        end
+      end
+    end
   end
 end
