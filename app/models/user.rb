@@ -4,6 +4,7 @@ class User < ApplicationRecord
   has_secure_password
 
   has_many :transactions, dependent: :destroy
+  has_many :diaries, dependent: :destroy
 
   validates :display_name, presence: true
   validates :first_name, presence: true

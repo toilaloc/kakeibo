@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :categories, only: %i[index create show update destroy]
       resources :transactions, only: %i[index create show update destroy]
       resources :kakeibo_dashboard, only: %i[index]
+      resources :diaries, only: %i[index show create update destroy]
     end
   end
 end
