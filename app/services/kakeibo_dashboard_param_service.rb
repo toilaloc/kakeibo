@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class KakeiboDashboardParamService < BaseService
   DASHBOARD_TYPE = %w[income expense all].freeze
   ANALYSIS_TYPE  = %w[1_month 6_month 12_month custom].freeze
@@ -9,7 +11,7 @@ class KakeiboDashboardParamService < BaseService
   end
 
   def call
-    raise ArgumentError, 'Invalid parameters' if permitted_params.blank?
+    raise ActionFailed, :invalid_params if permitted_params.blank?
 
     validate_params
     set_params
@@ -18,15 +20,17 @@ class KakeiboDashboardParamService < BaseService
   private
 
   def validate_params
-    return if DASHBOARD_TYPE.include?(permitted_params[:dashboard_type]) && ANALYSIS_TYPE.include?(permitted_params[:analysis_type])
+    if DASHBOARD_TYPE.include?(permitted_params[:dashboard_type]) && ANALYSIS_TYPE.include?(permitted_params[:analysis_type])
+      return
+    end
 
-    raise ArgumentError, 'Invalid dashboard_type or analysis_type'
+    raise ActionFailed, :invalid_params
   end
 
   def set_params
     permitted_params.tap do |params|
       params[:dashboard_type] = if permitted_params[:dashboard_type] == 'all'
-                                  %w[income expense]
+                                  %w[0 1]
                                 else
                                   permitted_params[:dashboard_type]
                                 end

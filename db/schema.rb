@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_12_24_071358) do
+ActiveRecord::Schema[7.0].define(version: 2025_12_26_000000) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "icon"
@@ -22,7 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_12_24_071358) do
   create_table "transactions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "category_id"
-    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.decimal "amount", precision: 15, scale: 2, null: false
     t.date "transaction_date", null: false
     t.string "note"
     t.datetime "created_at", null: false
