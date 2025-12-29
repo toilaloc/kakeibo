@@ -15,7 +15,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: root
   password:
-  host: localhost
+  host: 127.0.0.1
 
 development:
   <<: *default
@@ -27,7 +27,10 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: app_test
+  database: kakeibo_test
+  username: root
+  password: password
+  port: 3306
   # Prefer DATABASE_TEST_URL when running in containers; fall back to local settings
   url: <%= ENV['DATABASE_TEST_URL'] if ENV['DATABASE_TEST_URL'] %>
 
