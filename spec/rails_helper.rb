@@ -5,6 +5,18 @@ require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
+# Configure shoulda-matchers to work with RSpec and Rails
+begin
+  require 'shoulda/matchers'
+  Shoulda::Matchers.configure do |config|
+    config.integrate do |with|
+      with.test_framework :rspec
+      with.library :rails
+    end
+  end
+rescue LoadError
+  # shoulda-matchers may not be available in all environments; skip configuration if missing
+end
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -37,6 +49,13 @@ RSpec.configure do |config|
   # examples within a transaction, remove the following line or assign false
   # instead of true.
   config.use_transactional_fixtures = true
+
+  # Enable FactoryBot methods like `build` and `create` without prefix
+  begin
+    config.include FactoryBot::Syntax::Methods
+  rescue NameError
+    # FactoryBot may not be available in some environments; ignore if missing
+  end
 
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
