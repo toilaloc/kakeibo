@@ -4,6 +4,9 @@ class ApplicationController < ActionController::API
   before_action :authenticate_request, :authenticate_user!
 
   attr_reader :current_user
+  
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
+  rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity
 
   private
 
@@ -37,5 +40,15 @@ class ApplicationController < ActionController::API
 
   def not_authorized
     render json: { error: 'Not Authorized' }, status: :unauthorized
+  end
+
+  def render_not_found(exception = nil)
+    render json: { error: 'Not Found', message: exception&.message }, status: :not_found
+  end
+
+  def render_unprocessable_entity(exception)
+    record = exception.respond_to?(:record) ? exception.record : nil
+    errors = record ? record.errors.full_messages : [exception.message]
+    render json: { errors: errors }, status: :unprocessable_entity
   end
 end
